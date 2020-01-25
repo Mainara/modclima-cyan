@@ -23,3 +23,22 @@ exports.getFields = async function (req, res) {
         res.status(500).json({ data: { message: 'Error retrieving fields' } })
     }
 }
+
+exports.removeField = async function (req, res) {
+    try {
+        const field = await Fields.findOne({
+            where: {
+                id: req.params.id
+            },
+        });
+        if (field) {
+            await field.destroy();
+        } else {
+            res.status(400).json({ data: { message: 'Field not found' } })
+        }
+        res.status(204).send()
+    } catch (error) {
+        console.log('Error: ', error)
+        res.status(500).json({ data: { message: 'Error removing a field' } })
+    }
+};

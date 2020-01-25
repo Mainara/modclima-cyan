@@ -21,3 +21,29 @@ exports.getMills = async function (req, res) {
         res.status(500).json({ data: { message: 'Error retrieving mills'} })
     }
 }
+
+exports.removeMill = async function (req, res) {
+    try {
+        const mill = await Mills.findOne({
+            where: {
+                id: req.params.id
+            }, include: [{
+                model: Harvests,
+                as: 'harvests'
+            }]
+
+        });
+        if(mill && mill.harvests.length > 0) {
+            res.status(500).json({ data: { message: 'Cannot remove mill with associated harvests' } })
+        } else if (mill) {
+            await mill.destroy();
+            res.status(204).send();
+        } else {
+            res.status(400).json({ data: { message: 'Mill not found' } })
+        }
+
+    } catch (error) {
+        console.log('Error: ', error);
+        res.status(500).json({ data: { message: 'Error removing a mill' } })
+    }
+};
