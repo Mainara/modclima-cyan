@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
-import { Table, Modal, Button, Icon, Form, Select } from 'semantic-ui-react'
+import { Table, Modal, Button, Icon, Form, Select, Message } from 'semantic-ui-react'
+import { harvestService } from '../services/harvestService'
+import { millService } from '../services/millService'
 
 export default class Harvests extends Component {
 
@@ -7,7 +9,8 @@ export default class Harvests extends Component {
         super(props);
         this.state = {
             harvests: [], harvestCode: '', harvestStartDate: new Date(),
-            harvestEndDate: new Date(), millId: '', mills: []
+            harvestEndDate: new Date(), millId: '', mills: [], error: false,
+            errorMsg: ''
         }
 
         this.handleCodeChange = this.handleCodeChange.bind(this);
@@ -17,11 +20,43 @@ export default class Harvests extends Component {
         this.handleMillIdChange = this.handleMillIdChange.bind(this);
     }
 
+    componentDidMount() {
+        this.getMills()
+        this.getHarvests()
+    }
+
+    removeHarvest(id) {
+        if (window.confirm('Are you sure you want to delete?')) {
+            harvestService.deleteHarvest(id).then(res => {
+                if (res.status === 204) {
+                    this.getHarvests();
+                } else {
+                    this.setState({ error: true, errorMsg: 'Error when trying to delete the harvest' })
+                }
+            });
+        }
+    }
+
+    getHarvests() {
+        harvestService.getHarvests().then(response => this.setState({ harvests: response }))
+    }
+
+    getMills() {
+        millService.getMills().then(mills => {
+            let currentMills = []
+            mills.forEach(mill => {
+                currentMills.push({ key: mill.id, value: mill.id, text: mill.name })
+            });
+            this.setState({ mills: currentMills });
+        })
+    }
+
     addHarvest() {
         let harvest = {
             code: this.state.harvestCode, startDate: this.state.harvestStartDate,
             endDate: this.state.harvestEndDate, millId: this.state.millId
         }
+        harvestService.addHarvest(harvest)
         this.setState({
             harvests: [...this.state.harvests, harvest], harvestCode: '',
             harvestStartDate: null, harvestEndDate: null, millId: ''
@@ -51,12 +86,16 @@ export default class Harvests extends Component {
     render() {
         return (
             <div style={harvestsStyle}>
+                {this.state.error && <Message negative >
+                    <Message.Header>{this.state.errorMsg}</Message.Header>
+                </Message>}
                 <Table celled>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Harvest code</Table.HeaderCell>
                             <Table.HeaderCell>Start date</Table.HeaderCell>
                             <Table.HeaderCell>End date</Table.HeaderCell>
+                            <Table.HeaderCell></Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
 
@@ -65,6 +104,10 @@ export default class Harvests extends Component {
                             <Table.Cell>{item.code}</Table.Cell>
                             <Table.Cell>{item.startDate}</Table.Cell>
                             <Table.Cell>{item.endDate}</Table.Cell>
+                            <Table.Cell collapsing>
+                                <Button icon size='tiny' color='red'
+                                    onClick={() => this.removeHarvest(item.id)}><Icon name='delete' /> </Button>
+                            </Table.Cell>
                         </Table.Row>)}
                     </Table.Body>
                 </Table>
@@ -113,7 +156,8 @@ export default class Harvests extends Component {
 
 const harvestsStyle = {
     paddingLeft: '3%',
-    paddingRight: '3%'
+    paddingRight: '3%',
+    paddingTop: '1%'
 };
 
 const labelField = {

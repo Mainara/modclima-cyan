@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Form, Button } from 'semantic-ui-react'
 import MapContainer from './map'
+import { homeService } from '../services/homeService'
 
 export default class Farms extends Component {
 
@@ -18,6 +19,7 @@ export default class Farms extends Component {
         this.handleFarmNameChange = this.handleFarmNameChange.bind(this);
         this.handleFarmCodeChange = this.handleFarmCodeChange.bind(this);
         this.handleFieldCodeChange = this.handleFieldCodeChange.bind(this);
+        this.getFields = this.getFields.bind(this);
     }
 
     checkFilterButton() {
@@ -56,6 +58,17 @@ export default class Farms extends Component {
 
     handleFieldCodeChange(event) {
         this.setState({ fieldCode: event.target.value }, () => { this.checkFilterButton() })
+    }
+
+    getFields() {
+        homeService.filterFields(this.state.millName, this.state.startDate, this.state.endDate, this.state.harvestCode,
+            this.state.farmName, this.state.farmCode, this.state.fieldCode).then(fields => {
+                let currentPoints = []
+                fields.forEach(field => {
+                    currentPoints.push(field.point.coordinates)
+                });
+                this.setState({ points: currentPoints })
+            })
     }
 
     render() {
