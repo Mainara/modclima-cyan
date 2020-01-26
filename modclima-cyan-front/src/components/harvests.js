@@ -102,8 +102,8 @@ export default class Harvests extends Component {
                     <Table.Body>
                         {this.state.harvests.map((item, i) => <Table.Row key={i}>
                             <Table.Cell>{item.code}</Table.Cell>
-                            <Table.Cell>{item.startDate}</Table.Cell>
-                            <Table.Cell>{item.endDate}</Table.Cell>
+                            <Table.Cell>{item.startDate.substring(0, 10)}</Table.Cell>
+                            <Table.Cell>{item.endDate.substring(0, 10)}</Table.Cell>
                             <Table.Cell collapsing>
                                 <Button icon size='tiny' color='red'
                                     onClick={() => this.removeHarvest(item.id)}><Icon name='delete' /> </Button>
