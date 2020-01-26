@@ -28,7 +28,7 @@ CREATE EXTENSION postgis;
 ```
 With the database already configured, the entities and relationships must be created:
 ```
-npx  sequelize db:migrate 
+npx sequelize db:migrate 
 ```
 Now that everything is set up, the server can be started:
 ```
