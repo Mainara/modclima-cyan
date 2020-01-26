@@ -47,3 +47,5 @@ Launch the application:
 ```
 npm start
 ```
+
+NOTE: To use the map in the application, you need to add a google API key in the _apiKey_ variable in the _src/components/map.js_ file. (This link)[https://developers.google.com/maps/documentation/javascript/get-api-key?hl=pt-br] teaches you how to get this key:
