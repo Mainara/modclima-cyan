@@ -18,7 +18,7 @@ Install the necessary dependencies:
 ```
 npm install
 ```
-To create the database with the tables used in the project, use the following command:
+To create the database use the following command:
 ```
 npx sequelize db:create
 ```
